@@ -1,6 +1,7 @@
 use actix_web::{web, HttpResponse};
 use sqlx::{types::chrono::Utc, PgPool};
 use uuid::Uuid;
+
 #[derive(serde::Deserialize)]
 pub struct FormData {
     email: String,
