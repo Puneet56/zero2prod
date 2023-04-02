@@ -1,9 +1,13 @@
 use std::net::TcpListener;
 
+use once_cell::sync::Lazy;
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 
 use uuid::Uuid;
-use zero2prod::configuration::{get_configuration, DatabaseSettings};
+use zero2prod::{
+    configuration::{get_configuration, DatabaseSettings},
+    telemetry,
+};
 
 pub struct TestApp {
     pub address: String,
@@ -83,7 +87,14 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     }
 }
 
+static TRACING: Lazy<()> = Lazy::new(|| {
+    let subscriber = telemetry::get_subscriber("test".into(), "info".into());
+    telemetry::init_subscriber(subscriber);
+});
+
 async fn spawn_app() -> TestApp {
+    Lazy::force(&TRACING);
+
     let listner = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
     let port = listner.local_addr().unwrap().port();
     let address = format!("http://127.0.0.1:{}", port);
