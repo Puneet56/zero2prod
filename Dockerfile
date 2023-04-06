@@ -5,7 +5,7 @@ FROM rust:1.63.0
 # exist already.
 WORKDIR /app
 # Install the required system dependencies for our linking configuration
-RUN apt update && apt install lld clang -y
+RUN apt-get update && apt-get install lld clang -y
 # Copy all files from our working environment to our Docker image
 COPY . .
 # Let's build our binary!
